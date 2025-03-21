@@ -38,35 +38,66 @@ app.post('/webhook', async (req, res) => {
 
 async function sendWhatsAppMessage(message, business_phone_number_id) {
     try {
+        // Check if this is a new conversation or needs main menu
+        const response = {
+            messaging_product: "whatsapp",
+            to: message.from,
+            type: "interactive",
+            interactive: {
+                type: "button",
+                body: {
+                    text: "👋 Welcome to our service! Please select an option from below:"
+                },
+                action: {
+                    buttons: [
+                        {
+                            type: "reply",
+                            reply: {
+                                id: "btn_1",
+                                title: "Option 1"
+                            }
+                        },
+                        {
+                            type: "reply",
+                            reply: {
+                                id: "btn_2",
+                                title: "Option 2"
+                            }
+                        },
+                        {
+                            type: "reply",
+                            reply: {
+                                id: "btn_3",
+                                title: "Option 3"
+                            }
+                        }
+                    ]
+                }
+            }
+        };
+
         await axios({
             method: "POST",
             url: `https://graph.facebook.com/v18.0/${business_phone_number_id}/messages`,
             headers: {
-          Authorization: `Bearer ${GRAPH_API_TOKEN}`,
-        },
-        data: {
-          messaging_product: "whatsapp",
-          to: message.from,
-          text: { body: message.text.body },
-          context: {
-            message_id: message.id, // shows the message as a reply to the original user message
-          },
-        },
-      });
-  
-      // mark incoming message as read
-      await axios({
-        method: "POST",
-        url: `https://graph.facebook.com/v18.0/${business_phone_number_id}/messages`,
-        headers: {
-          Authorization: `Bearer ${GRAPH_API_TOKEN}`,
-        },
-        data: {
-          messaging_product: "whatsapp",
-          status: "read",
-          message_id: message.id,
-        },
-      });
+                Authorization: `Bearer ${GRAPH_API_TOKEN}`,
+            },
+            data: response
+        });
+
+        // mark incoming message as read
+        await axios({
+            method: "POST",
+            url: `https://graph.facebook.com/v18.0/${business_phone_number_id}/messages`,
+            headers: {
+                Authorization: `Bearer ${GRAPH_API_TOKEN}`,
+            },
+            data: {
+                messaging_product: "whatsapp",
+                status: "read",
+                message_id: message.id,
+            },
+        });
     } catch (error) {
         console.error('Error sending WhatsApp message:', error);
     }
