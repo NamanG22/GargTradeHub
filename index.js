@@ -23,36 +23,9 @@ app.post('/webhook', async (req, res) => {
 
         if (message?.type === "text") {
             const business_phone_number_id = req.body.entry?.[0].changes?.[0].value?.metadata?.phone_number_id;
-        
-            await axios({
-              method: "POST",
-              url: `https://graph.facebook.com/v18.0/${business_phone_number_id}/messages`,
-              headers: {
-                Authorization: `Bearer ${GRAPH_API_TOKEN}`,
-              },
-              data: {
-                messaging_product: "whatsapp",
-                to: message.from,
-                text: { body: "Echo: " + message.text.body },
-                context: {
-                  message_id: message.id, // shows the message as a reply to the original user message
-                },
-              },
-            });
-        
-            // mark incoming message as read
-            await axios({
-              method: "POST",
-              url: `https://graph.facebook.com/v18.0/${business_phone_number_id}/messages`,
-              headers: {
-                Authorization: `Bearer ${GRAPH_API_TOKEN}`,
-              },
-              data: {
-                messaging_product: "whatsapp",
-                status: "read",
-                message_id: message.id,
-              },
-            });
+            
+            sendWhatsAppMessage(message, business_phone_number_id);
+            
           }
         
           res.sendStatus(200);
@@ -63,51 +36,39 @@ app.post('/webhook', async (req, res) => {
     }
 });
 
-async function sendWhatsAppMessage(to, message) {
+async function sendWhatsAppMessage(message, business_phone_number_id) {
     try {
-        const response = await axios({
-            method: 'POST',
-            url: `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+        await axios({
+            method: "POST",
+            url: `https://graph.facebook.com/v18.0/${business_phone_number_id}/messages`,
             headers: {
-                'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
-                'Content-Type': 'application/json'
-            },
-            data: {
-                messaging_product: "whatsapp",
-                to: to,
-                type: "text",
-                text: {
-                    body: message
-                }
-            }
-        });
-        
-        console.log('WhatsApp message sent successfully:', response.data);
-        return response.data;
+          Authorization: `Bearer ${GRAPH_API_TOKEN}`,
+        },
+        data: {
+          messaging_product: "whatsapp",
+          to: message.from,
+          text: { body: message.text.body },
+          context: {
+            message_id: message.id, // shows the message as a reply to the original user message
+          },
+        },
+      });
+  
+      // mark incoming message as read
+      await axios({
+        method: "POST",
+        url: `https://graph.facebook.com/v18.0/${business_phone_number_id}/messages`,
+        headers: {
+          Authorization: `Bearer ${GRAPH_API_TOKEN}`,
+        },
+        data: {
+          messaging_product: "whatsapp",
+          status: "read",
+          message_id: message.id,
+        },
+      });
     } catch (error) {
-        console.error('Error sending WhatsApp message:', error.response?.data || error.message);
-        throw error;
-    }
-}
-
-async function handleSellerOnboarding(seller, message) {
-    switch (seller.onboardingStep) {
-        case 1:
-            seller.businessName = message;
-            seller.onboardingStep = 2;
-            await seller.save();
-            await sendWhatsAppMessage(seller.whatsappNumber, 'Please enter your business address:');
-            break;
-        case 2:
-            seller.address = message;
-            seller.onboardingStep = 3;
-            seller.onboardingComplete = true;
-            await seller.save();
-            await sendWhatsAppMessage(
-                seller.whatsappNumber, 
-                'Thank you! Your registration is complete. To add a product, send "add product"'
-            );
-            break;
+        console.error('Error sending WhatsApp message:', error);
     }
 }
 
@@ -127,13 +88,8 @@ app.get("/webhook", (req, res) => {
     }
   });
   
-  app.get("/", (req, res) => {
-    res.send(`<pre>Nothing to see here.
-  Checkout README.md to start.</pre>`);
-  });
-
-app.get('/check', (req, res) => {
-    res.send('Hello World');
+app.get("/", (req, res) => {
+    res.send("Hello World");
 });
 
 app.listen(process.env.PORT, () => {
