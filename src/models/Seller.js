@@ -7,6 +7,11 @@ const sellerSchema = new mongoose.Schema({
     address: { type: String, required: true },
     gstin: { type: String, required: false },
     products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    status: {
+        type: String,
+        enum: ['pending', 'active', 'suspended'],
+        default: 'pending'
+    },
     verified: { type: Boolean, default: false },
     onboardingComplete: { type: Boolean, default: false },
     onboardingStep: { type: Number, default: 1 },
