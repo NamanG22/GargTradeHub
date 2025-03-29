@@ -1,5 +1,6 @@
 const MessageBuilder = require('../utils/messageBuilder');
 const apiClient = require('../utils/apiClient');
+const Buyer = require('../../models/Buyer');
 
 class BuyHandler {
     async handleBuyButton(user_phone, business_phone_number_id) {

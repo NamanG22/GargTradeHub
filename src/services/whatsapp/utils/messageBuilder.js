@@ -160,7 +160,7 @@ class MessageBuilder {
                     "url": {
                         "id": "btn_seller_form",
                         "title": "Register as Seller 📝",
-                        "url": "https://forms.gle/YOUR_GOOGLE_FORM_URL" // Replace with your actual Google Form URL
+                        "url": process.env.SELLER_REGISTRATION_FORM_URL
                     }
                 },
                 {
