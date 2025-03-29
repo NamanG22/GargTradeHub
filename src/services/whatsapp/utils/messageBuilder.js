@@ -174,6 +174,43 @@ class MessageBuilder {
         );
     }
 
+    static buildExistingSellerResponse(seller, user_phone) {
+        return MessageBuilder.buildTextMessage(
+            user_phone,
+            `👋 Welcome back ${seller.name}!\n\n` +
+            `🏪 Your Seller Dashboard:\n` +
+            `• Total Products: ${seller.products?.length || 0}\n` +
+            `• Account Status: ${seller.status}\n\n` +
+            `What would you like to do today?\n\n` +
+            `1. Add New Product\n` +
+            `2. View My Products\n` +
+            `3. Update Profile`
+        );
+    }
+
+    static buildExistingBuyerResponse(to) {
+        return this.buildTextMessage(
+            to,
+            "👋 Welcome back! You're already registered as a buyer on GargTradeHub.\n\n" +
+            "What would you like to do today?"
+        );
+    }
+
+    static buildNewBuyerRegistrationMessage(to) {
+        return this.buildButtonMessage(
+            to,
+            "👋 Welcome to GargTradeHub Buyer Program!\n\n" +
+            "To start buying on our platform, please complete our buyer registration form. " +
+            "The form collects important information such as:\n\n" +
+            "📝 Required Information:\n" +
+            "• Business Name\n" +
+            "• Business Address\n" +
+            "• GST Number (if applicable)\n" +
+            "• Product Categories\n" +
+            "• Bank Details\n\n"
+        );
+    }
+
     static buildSellerFormSubmissionMessage(to) {
         return this.buildTextMessage(
             to,

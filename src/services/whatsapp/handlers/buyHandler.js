@@ -3,8 +3,24 @@ const apiClient = require('../utils/apiClient');
 
 class BuyHandler {
     async handleBuyButton(user_phone, business_phone_number_id) {
-        const response = MessageBuilder.buildTextMessage(user_phone, "🛍️ Welcome to GargTradeHub Buying Portal!\n\nAs a buyer, you can:\n• Browse bulk products\n• Get wholesale prices\n• Place bulk orders\n• Track your orders\n\nWhat would you like to do first?");
-        await apiClient.sendMessage(response, business_phone_number_id);
+        try {
+            // Check if buyer exists
+            const existingBuyer = await Buyer.findOne({ phoneNumber: user_phone });
+            
+            if (existingBuyer) {
+                // Handle existing buyer flow
+                const response = MessageBuilder.buildExistingBuyerResponse(existingBuyer, user_phone);
+                await apiClient.sendMessage(response, business_phone_number_id);
+            } else {
+                // Send new buyer registration message with Google Form
+                const registrationMsg = MessageBuilder.buildNewBuyerRegistrationMessage(user_phone);
+                await apiClient.sendMessage(registrationMsg, business_phone_number_id); 
+            }
+        } catch (error) {
+            console.error('Error in handleBuyButton:', error);
+            const errorResponse = MessageBuilder.buildErrorMessage(user_phone);
+            await apiClient.sendMessage(errorResponse, business_phone_number_id);
+        }   
     }
 }
 

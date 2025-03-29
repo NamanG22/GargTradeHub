@@ -29,20 +29,6 @@ class SellHandler {
             await apiClient.sendMessage(errorResponse, business_phone_number_id);
         }
     }
-
-    _buildExistingSellerResponse(seller, user_phone) {
-        return MessageBuilder.buildTextMessage(
-            user_phone,
-            `👋 Welcome back ${seller.name}!\n\n` +
-            `🏪 Your Seller Dashboard:\n` +
-            `• Total Products: ${seller.products?.length || 0}\n` +
-            `• Account Status: ${seller.status}\n\n` +
-            `What would you like to do today?\n\n` +
-            `1. Add New Product\n` +
-            `2. View My Products\n` +
-            `3. Update Profile`
-        );
-    }
 }
 
 module.exports = new SellHandler();
