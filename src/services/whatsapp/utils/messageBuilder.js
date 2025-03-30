@@ -77,7 +77,7 @@ class MessageBuilder {
             interactive: {
                 type: "button",
                 body: { text: bodyText },
-                action: { buttons }
+                action: { "buttons":buttons }
             }
         };
     }
@@ -153,16 +153,16 @@ class MessageBuilder {
             "• GST Number (if applicable)\n" +
             "• Product Categories\n" +
             "• Bank Details\n\n" +
-            "Click the button below to fill out the registration form:",
+            `Form link: ${process.env.SELLER_REGISTRATION_FORM_URL}`,
             [
-                {
-                    "type": "url",
-                    "url": {
-                        "id": "btn_seller_form",
-                        "title": "Register as Seller 📝",
-                        "url": process.env.SELLER_REGISTRATION_FORM_URL
-                    }
-                },
+                // {
+                //     "type": "url",
+                //     // "url": {
+                //         // "id": "btn_seller_form",
+                //         "text": "Register as Seller 📝",
+                //         "url": process.env.SELLER_REGISTRATION_FORM_URL
+                //     // }
+                // },
                 {
                     "type": "reply",
                     "reply": {
@@ -197,7 +197,7 @@ class MessageBuilder {
     }
 
     static buildNewBuyerRegistrationMessage(to) {
-        return this.buildButtonMessage(
+        return this.buildTextMessage(
             to,
             "👋 Welcome to GargTradeHub Buyer Program!\n\n" +
             "To start buying on our platform, please complete our buyer registration form. " +
